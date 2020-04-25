@@ -66,8 +66,14 @@
 
                 // Then
                 issues.Count.ShouldBe(5);
+                issues.Count(i => 
+                    i.FilePath() == "Src/Foo.cs" && 
+                    i.Line == 16).ShouldBe(1);
 
-                var issueToVerify = issues.Single(p => p.FilePath() == "Src/Foo.cs" && p.Line == 16);
+                var issueToVerify = issues.Single(i =>
+                    i.FilePath() == "Src/Foo.cs" &&
+                    i.Line == 16);
+
                 IssueChecker.Check(
                     issueToVerify,
                     IssueBuilder.NewIssue(
