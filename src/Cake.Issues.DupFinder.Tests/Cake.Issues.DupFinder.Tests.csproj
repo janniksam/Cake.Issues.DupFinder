@@ -1,15 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net461</TargetFrameworks>
-
     <IsPackable>false</IsPackable>
     <Product>Cake.Issues</Product>
     <Description>Tests for the Cake.Issues.DupFinder addin</Description>
     <Authors>janniksam</Authors>
     <Copyright>Copyright © janniksam and contributors</Copyright>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\Cake.Issues.DupFinder.Tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -34,5 +32,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
+  <ItemGroup>
+    <None Remove="Testfiles\DupFinder.xml" />
+    <None Remove="Testfiles\DupFinder1000Duplicates.xml" />
+    <EmbeddedResource Include="Testfiles\DupFinder1000Duplicates.xml" />
+    <EmbeddedResource Include="Testfiles\DupFinder.xml" />
+  </ItemGroup>
 </Project>
