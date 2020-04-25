@@ -83,7 +83,7 @@
             }
 
             [Fact(Timeout = 50)]
-            public void ShouldReadBigFileWith1000DuplicatesInUnder50ms()
+            public void ShouldReadBigFileWith1000DuplicatesInUnder100ms()
             {
                 // Given
                 var fixture = new DupFinderIssuesProviderFixture("DupFinder1000Duplicates.xml");
@@ -101,7 +101,7 @@
 
                 // Then
                 issues.Count.ShouldBe(2885);
-                sw.ElapsedMilliseconds.ShouldBeLessThan(500);
+                sw.ElapsedMilliseconds.ShouldBeLessThan(1000);
             }
         }
     }
