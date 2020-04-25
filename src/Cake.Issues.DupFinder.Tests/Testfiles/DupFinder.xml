@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DuplicatesReport ToolsVersion="201.0.20200415.5131">
+  <Statistics>
+    <CodebaseCost>2561544</CodebaseCost>
+    <TotalDuplicatesCost>70629</TotalDuplicatesCost>
+    <TotalFragmentsCost>148757</TotalFragmentsCost>
+  </Statistics>
+  <Duplicates>
+    <Duplicate Cost="100">
+      <Fragment>
+        <FileName>Src\Foo.cs</FileName>
+        <OffsetRange Start="460" End="7891"></OffsetRange>
+        <LineRange Start="16" End="232"></LineRange>
+      </Fragment>
+      <Fragment>
+        <FileName>Src\Bar.cs</FileName>
+        <OffsetRange Start="453" End="7896"></OffsetRange>
+        <LineRange Start="17" End="233"></LineRange>
+      </Fragment>
+    </Duplicate>
+	    <Duplicate Cost="50">
+      <Fragment>
+        <FileName>Src\TestFoo.cs</FileName>
+        <OffsetRange Start="600" End="800"></OffsetRange>
+        <LineRange Start="2" End="4"></LineRange>
+      </Fragment>
+      <Fragment>
+        <FileName>Src\TestBar.cs</FileName>
+        <OffsetRange Start="730" End="830"></OffsetRange>
+        <LineRange Start="3" End="5"></LineRange>
+      </Fragment>
+    </Duplicate>
+  </Duplicates>
+</DuplicatesReport>
