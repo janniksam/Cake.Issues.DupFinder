@@ -17,6 +17,11 @@
         <OffsetRange Start="453" End="7896"></OffsetRange>
         <LineRange Start="17" End="233"></LineRange>
       </Fragment>
+      <Fragment>
+        <FileName>Src\FooBar.cs</FileName>
+        <OffsetRange Start="553" End="7996"></OffsetRange>
+        <LineRange Start="18" End="234"></LineRange>
+      </Fragment>
     </Duplicate>
 	    <Duplicate Cost="50">
       <Fragment>

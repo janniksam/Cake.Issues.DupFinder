@@ -35,30 +35,33 @@
             {
                 if (!TryGetCost(duplicate, out var cost))
                 {
+                    this.Log.Warning(
+                        "Cost of the current duplicate could not be determined. Skipped.");
                     continue;
                 }
 
                 // Gets all fragments from a duplicate
-                var fragments = GetDuplicateFragements(duplicate);
+                var fragments = this.GetDuplicateFragements(duplicate);
                 if (fragments.Count < 2)
                 {
+                    this.Log.Warning(
+                        "There are less than two fragments for the current duplicate. " +
+                        "A duplicate needs atleast two fragment to be an actual duplicate. Skipped.");
                     continue;
                 }
 
                 foreach (var fragment in fragments)
                 {
-                    var builder = new StringBuilder();
-                    builder.AppendLine($"Possible duplicate detected (cost {cost}).");
-                    builder.AppendLine("The following fragments were found that might be duplicates:");
-                    foreach (var possibleDuplicateFragment in fragments.Where(innerDuplicate => !innerDuplicate.Equals(fragment)))
-                    {
-                        builder.Append($"`{possibleDuplicateFragment.File}` (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
-                    }
+                    var message = GetSimpleMessage(cost, fragments, fragment);
+                    var htmlMessage = GetHtmlMessage(cost, fragments, fragment);
+                    var mdMessage = GetMarkdownMessage(cost, fragments, fragment);
 
                     result.Add(
                         IssueBuilder
-                            .NewIssue(builder.ToString(), this)
-                            .InFile(fragment.File, fragment.LineStart)
+                            .NewIssue(message, this)
+                            .WithMessageInHtmlFormat(htmlMessage)
+                            .WithMessageInMarkdownFormat(mdMessage)
+                            .InFile(fragment.FilePath, fragment.LineStart)
                             .OfRule("dupFinder")
                             .WithPriority(IssuePriority.Warning)
                             .Create());
@@ -68,25 +71,49 @@
             return result;
         }
 
-        private static IReadOnlyCollection<DuplicateFragment> GetDuplicateFragements(XContainer duplicate)
+        private static string GetHtmlMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
         {
-            var items = new List<DuplicateFragment>();
-            foreach (var issue in duplicate.Descendants("Fragment"))
+            var builder = new StringBuilder();
+            builder.Append($"Possible duplicate detected (cost {cost}).");
+            builder.Append("<br/>The following fragments were found that might be duplicates:");
+            foreach (var possibleDuplicateFragment in fragments.Where(innerDuplicate => !innerDuplicate.Equals(fragment)))
             {
-                if (!TryGetFile(issue, out var file))
-                {
-                    continue;
-                }
-
-                if (!TryGetLine(issue, out var lineStart, out var lineEnd))
-                {
-                    continue;
-                }
-
-                items.Add(new DuplicateFragment(file, lineStart, lineEnd));
+                builder.Append("<br/>");
+                builder.Append(
+                    $"<code>{possibleDuplicateFragment.FilePath}</code> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
             }
 
-            return items;
+            return builder.ToString();
+        }
+
+        private static string GetMarkdownMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
+            builder.Append("The following fragments were found that might be duplicates:");
+            foreach (var possibleDuplicateFragment in fragments.Where(innerDuplicate => !innerDuplicate.Equals(fragment)))
+            {
+                builder.Append("\r\n");
+                builder.Append(
+                    $"`{possibleDuplicateFragment.FilePath}` (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
+            }
+
+            return builder.ToString();
+        }
+
+        private static string GetSimpleMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
+            builder.Append("The following fragments were found that might be duplicates:");
+            foreach (var possibleDuplicateFragment in fragments.Where(innerDuplicate => !innerDuplicate.Equals(fragment)))
+            {
+                builder.Append("\r\n");
+                builder.Append(
+                    $"\"{possibleDuplicateFragment.FilePath}\" (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
+            }
+
+            return builder.ToString();
         }
 
         private static bool TryGetCost(XElement duplicate, out int cost)
@@ -145,16 +172,39 @@
             return true;
         }
 
+        private IReadOnlyCollection<DuplicateFragment> GetDuplicateFragements(XContainer duplicate)
+        {
+            var items = new List<DuplicateFragment>();
+            foreach (var issue in duplicate.Descendants("Fragment"))
+            {
+                if (!TryGetFile(issue, out var file))
+                {
+                    this.Log.Warning("FilePath of the current Fragment could not be determined. Skipped.");
+                    continue;
+                }
+
+                if (!TryGetLine(issue, out var lineStart, out var lineEnd))
+                {
+                    this.Log.Warning("The location of the current Fragment could not be determined. Skipped.");
+                    continue;
+                }
+
+                items.Add(new DuplicateFragment(file, lineStart, lineEnd));
+            }
+
+            return items;
+        }
+
         private class DuplicateFragment
         {
-            internal DuplicateFragment(string file, int lineStart, int lineEnd)
+            internal DuplicateFragment(string filePath, int lineStart, int lineEnd)
             {
-                this.File = file; 
+                this.FilePath = filePath; 
                 this.LineStart = lineStart;
                 this.LineEnd = lineEnd;
             }
 
-            internal string File { get; }
+            internal string FilePath { get; }
 
             internal int LineStart { get; }
 

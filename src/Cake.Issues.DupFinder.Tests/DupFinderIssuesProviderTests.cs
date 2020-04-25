@@ -39,7 +39,21 @@
         public sealed class TheReadIssuesMethod
         {
             private const string ExpectedIssueMessage =
-                "Possible duplicate detected (cost 100).\r\nThe following fragments were found that might be duplicates:\r\n`Src\\Bar.cs` (Line 17 to 233)";
+                "Possible duplicate detected (cost 100).\r\nThe following fragments were found that might be duplicates:\r\n" +
+                "\"Src\\Bar.cs\" (Line 17 to 233)\r\n" +
+                "\"Src\\FooBar.cs\" (Line 18 to 234)";
+
+            private const string ExpectedIssueMarkdownMessage =
+                "Possible duplicate detected (cost 100).\r\n" +
+                "The following fragments were found that might be duplicates:\r\n" +
+                "`Src\\Bar.cs` (Line 17 to 233)\r\n" +
+                "`Src\\FooBar.cs` (Line 18 to 234)";
+
+            private const string ExpectedIssueHtmlMessage =
+                "Possible duplicate detected (cost 100).<br/>" +
+                "The following fragments were found that might be duplicates:<br/>" +
+                "<code>Src\\Bar.cs</code> (Line 17 to 233)<br/>" +
+                "<code>Src\\FooBar.cs</code> (Line 18 to 234)";
 
             [Fact]
             public void Should_Read_Issue_Correct()
@@ -51,7 +65,7 @@
                 var issues = fixture.ReadIssues().ToList();
 
                 // Then
-                issues.Count.ShouldBe(4);
+                issues.Count.ShouldBe(5);
 
                 var issueToVerify = issues.Single(p => p.FilePath() == "Src/Foo.cs" && p.Line == 16);
                 IssueChecker.Check(
@@ -60,6 +74,8 @@
                             ExpectedIssueMessage,
                             "Cake.Issues.DupFinder.DupFinderIssuesProvider",
                             "DupFinder")
+                        .WithMessageInMarkdownFormat(ExpectedIssueMarkdownMessage)
+                        .WithMessageInHtmlFormat(ExpectedIssueHtmlMessage)
                         .InFile(@"Src\Foo.cs", 16)
                         .OfRule("dupFinder")
                         .WithPriority(IssuePriority.Warning)

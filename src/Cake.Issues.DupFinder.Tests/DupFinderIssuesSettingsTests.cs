@@ -62,20 +62,19 @@
                 settings.LogFileContent.ShouldBe(logFileContent);
             }
 
-            //// TODO Enable once a test file is available
-            ////[Fact]
-            ////public void Should_Set_LogFileContent_From_LogFilePath()
-            ////{
-            ////    // Given
-            ////    using (var tempFile = new ResourceTempFile("Cake.Issues.DupFinder.Tests.Testfiles.dupfinder.xml"))
-            ////    {
-            ////        // When
-            ////        var settings = new DupFinderIssuesSettings(tempFile.FileName);
+            [Fact]
+            public void Should_Set_LogFileContent_From_LogFilePath()
+            {
+                // Given
+                using (var tempFile = new ResourceTempFile("Cake.Issues.DupFinder.Tests.Testfiles.DupFinder.xml"))
+                {
+                    // When
+                    var settings = new DupFinderIssuesSettings(tempFile.FileName);
 
-            ////        // Then
-            ////        settings.LogFileContent.ShouldBe(tempFile.Content);
-            ////    }
-            ////}
+                    // Then
+                    settings.LogFileContent.ShouldBe(tempFile.Content);
+                }
+            }
         }
     }
 }
