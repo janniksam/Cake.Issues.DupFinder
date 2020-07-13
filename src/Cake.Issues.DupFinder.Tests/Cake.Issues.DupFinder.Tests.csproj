@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net461</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <Product>Cake.Issues</Product>
+    <Description>Tests for the Cake.Issues.DupFinder addin</Description>
+    <Authors>janniksam</Authors>
+    <Copyright>Copyright © janniksam and contributors</Copyright>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\Cake.Issues.DupFinder.Tests.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cake.Issues.DupFinder\Cake.Issues.DupFinder.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cake.Issues" Version="0.8.0" />
+    <PackageReference Include="Cake.Issues.Testing" Version="0.8.0" />
+    <PackageReference Include="Cake.Testing" Version="0.33.0" />
+    <PackageReference Include="Shouldly" Version="3.0.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Testfiles\DupFinder.xml" />
+    <None Remove="Testfiles\DupFinder1000Duplicates.xml" />
+    <EmbeddedResource Include="Testfiles\DupFinder1000Duplicates.xml" />
+    <EmbeddedResource Include="Testfiles\DupFinder.xml" />
+  </ItemGroup>
+</Project>
