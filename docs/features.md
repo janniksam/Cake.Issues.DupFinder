@@ -19,7 +19,11 @@ The [Cake.Issues.DupFinder addin] provides the following features:
 | <span class="glyphicon glyphicon-remove" style="color:red"></span> | `IIssue.ProjectName`              |                                  |
 | <span class="glyphicon glyphicon-remove" style="color:red"></span> | `IIssue.ProjectFileRelativePath`  |                                  |
 | <span class="glyphicon glyphicon-ok" style="color:green"></span>   | `IIssue.AffectedFileRelativePath` |                                  |
+| <span class="glyphicon glyphicon-ok" style="color:green"></span>   | `IIssue.Identifier`               |                                  |
 | <span class="glyphicon glyphicon-ok" style="color:green"></span>   | `IIssue.Line`                     |                                  |
+| <span class="glyphicon glyphicon-ok" style="color:green"></span>   | `IIssue.EndLine`                  |                                  |
+| <span class="glyphicon glyphicon-remove" style="color:red"></span> | `IIssue.Column`                   |                                  |
+| <span class="glyphicon glyphicon-remove" style="color:red"></span> | `IIssue.EndColumn`                |                                  |
 | <span class="glyphicon glyphicon-ok" style="color:green"></span>   | `IIssue.MessageText`              |                                  |
 | <span class="glyphicon glyphicon-ok" style="color:green"></span>   | `IIssue.MessageHtml`              |                                  |
 | <span class="glyphicon glyphicon-ok" style="color:green"></span>   | `IIssue.MessageMarkdown`          |                                  |
