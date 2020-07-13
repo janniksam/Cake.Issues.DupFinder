@@ -52,16 +52,18 @@
 
                 foreach (var fragment in fragments)
                 {
+                    // todo Add a good identifier implementation
+                    var identifier = GetSimpleMessage(cost, fragments, fragment);
                     var message = GetSimpleMessage(cost, fragments, fragment);
                     var htmlMessage = GetHtmlMessage(cost, fragments, fragment);
                     var mdMessage = GetMarkdownMessage(cost, fragments, fragment);
 
                     result.Add(
                         IssueBuilder
-                            .NewIssue(message, this)
+                            .NewIssue(identifier, message, this)
                             .WithMessageInHtmlFormat(htmlMessage)
                             .WithMessageInMarkdownFormat(mdMessage)
-                            .InFile(fragment.FilePath, fragment.LineStart)
+                            .InFile(fragment.FilePath, fragment.LineStart, fragment.LineEnd, null, null)
                             .OfRule("dupFinder")
                             .WithPriority(IssuePriority.Warning)
                             .Create());

@@ -68,11 +68,11 @@
                 issues.Count.ShouldBe(5);
                 issues.Count(i => 
                     i.FilePath() == "Src/Foo.cs" && 
-                    i.Line == 16).ShouldBe(1);
+                    i.Line == 16 && i.EndLine == 232).ShouldBe(1);
 
                 var issueToVerify = issues.Single(i =>
                     i.FilePath() == "Src/Foo.cs" &&
-                    i.Line == 16);
+                    i.Line == 16 && i.EndLine == 232);
 
                 IssueChecker.Check(
                     issueToVerify,
@@ -82,7 +82,7 @@
                             "DupFinder")
                         .WithMessageInMarkdownFormat(ExpectedIssueMarkdownMessage)
                         .WithMessageInHtmlFormat(ExpectedIssueHtmlMessage)
-                        .InFile(@"Src\Foo.cs", 16)
+                        .InFile(@"Src\Foo.cs", 16, 232, null, null)
                         .OfRule("dupFinder")
                         .WithPriority(IssuePriority.Warning)
                         .Create());
