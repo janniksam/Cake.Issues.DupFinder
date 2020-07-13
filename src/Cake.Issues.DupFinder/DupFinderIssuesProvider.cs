@@ -52,8 +52,7 @@
 
                 foreach (var fragment in fragments)
                 {
-                    // todo Add a good identifier implementation
-                    var identifier = GetSimpleMessage(cost, fragments, fragment);
+                    var identifier = GetIdentifier(cost, fragments, fragment);
                     var message = GetSimpleMessage(cost, fragments, fragment);
                     var htmlMessage = GetHtmlMessage(cost, fragments, fragment);
                     var mdMessage = GetMarkdownMessage(cost, fragments, fragment);
@@ -73,12 +72,19 @@
             return result;
         }
 
+        private static string GetIdentifier(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        {
+            var otherFragments =
+                fragments.Where(f => !f.Equals(fragment)).OrderBy(f => f.FilePath).Select(p => p.FilePath);
+            return $"{fragment.FilePath}-{cost}-{string.Join("-", otherFragments)}";
+        }
+
         private static string GetHtmlMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
         {
             var builder = new StringBuilder();
             builder.Append($"Possible duplicate detected (cost {cost}).");
             builder.Append("<br/>The following fragments were found that might be duplicates:");
-            foreach (var possibleDuplicateFragment in fragments.Where(innerDuplicate => !innerDuplicate.Equals(fragment)))
+            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
             {
                 builder.Append("<br/>");
                 builder.Append(
@@ -93,7 +99,7 @@
             var builder = new StringBuilder();
             builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
             builder.Append("The following fragments were found that might be duplicates:");
-            foreach (var possibleDuplicateFragment in fragments.Where(innerDuplicate => !innerDuplicate.Equals(fragment)))
+            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
             {
                 builder.Append("\r\n");
                 builder.Append(
@@ -108,7 +114,7 @@
             var builder = new StringBuilder();
             builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
             builder.Append("The following fragments were found that might be duplicates:");
-            foreach (var possibleDuplicateFragment in fragments.Where(innerDuplicate => !innerDuplicate.Equals(fragment)))
+            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
             {
                 builder.Append("\r\n");
                 builder.Append(

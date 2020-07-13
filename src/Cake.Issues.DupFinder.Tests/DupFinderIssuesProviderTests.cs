@@ -38,6 +38,9 @@
 
         public sealed class TheReadIssuesMethod
         {
+            private const string ExpectedIssueIdentifier =
+                "Src\\Foo.cs-100-Src\\Bar.cs-Src\\FooBar.cs";
+ 
             private const string ExpectedIssueMessage =
                 "Possible duplicate detected (cost 100).\r\nThe following fragments were found that might be duplicates:\r\n" +
                 "\"Src\\Bar.cs\" (Line 17 to 233)\r\n" +
@@ -77,6 +80,7 @@
                 IssueChecker.Check(
                     issueToVerify,
                     IssueBuilder.NewIssue(
+                            ExpectedIssueIdentifier,
                             ExpectedIssueMessage,
                             "Cake.Issues.DupFinder.DupFinderIssuesProvider",
                             "DupFinder")
