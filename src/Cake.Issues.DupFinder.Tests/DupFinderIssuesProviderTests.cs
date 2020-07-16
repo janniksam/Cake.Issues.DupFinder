@@ -38,6 +38,9 @@
 
         public sealed class TheReadIssuesMethod
         {
+            private const string ExpectedIssueIdentifier =
+                "Src\\Foo.cs-100-Src\\Bar.cs-Src\\FooBar.cs";
+ 
             private const string ExpectedIssueMessage =
                 "Possible duplicate detected (cost 100).\r\nThe following fragments were found that might be duplicates:\r\n" +
                 "\"Src\\Bar.cs\" (Line 17 to 233)\r\n" +
@@ -68,21 +71,22 @@
                 issues.Count.ShouldBe(5);
                 issues.Count(i => 
                     i.FilePath() == "Src/Foo.cs" && 
-                    i.Line == 16).ShouldBe(1);
+                    i.Line == 16 && i.EndLine == 232).ShouldBe(1);
 
                 var issueToVerify = issues.Single(i =>
                     i.FilePath() == "Src/Foo.cs" &&
-                    i.Line == 16);
+                    i.Line == 16 && i.EndLine == 232);
 
                 IssueChecker.Check(
                     issueToVerify,
                     IssueBuilder.NewIssue(
+                            ExpectedIssueIdentifier,
                             ExpectedIssueMessage,
                             "Cake.Issues.DupFinder.DupFinderIssuesProvider",
                             "DupFinder")
                         .WithMessageInMarkdownFormat(ExpectedIssueMarkdownMessage)
                         .WithMessageInHtmlFormat(ExpectedIssueHtmlMessage)
-                        .InFile(@"Src\Foo.cs", 16)
+                        .InFile(@"Src\Foo.cs", 16, 232, null, null)
                         .OfRule("dupFinder")
                         .WithPriority(IssuePriority.Warning)
                         .Create());
