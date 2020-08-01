@@ -107,7 +107,7 @@
             }
 
             [Fact(Timeout = 50)]
-            public void ShouldReadBigFileWith1000DuplicatesInUnder100Milliseconds()
+            public void ShouldReadBigFileWith1000DuplicatesInUnder200Milliseconds()
             {
                 // Given
                 var fixture = new DupFinderIssuesProviderFixture("DupFinder1000Duplicates.xml");
@@ -125,7 +125,7 @@
 
                 // Then
                 issues.Count.ShouldBe(2885);
-                sw.ElapsedMilliseconds.ShouldBeLessThan(1000);
+                sw.ElapsedMilliseconds.ShouldBeLessThan(2000);
             }
 
 
@@ -151,7 +151,7 @@
                 var branch = "develop";
                 var rootPath = string.Empty;
 
-                var fixture = new DupFinderIssuesProviderFixture("DupFinder.xml");
+                var fixture = 4new DupFinderIssuesProviderFixture("DupFinder.xml");
                 fixture.ReadIssuesSettings.FileLinkSettings = FileLinkSettings.AzureDevOps(repositoryUrl, branch, rootPath);
 
                 // When
