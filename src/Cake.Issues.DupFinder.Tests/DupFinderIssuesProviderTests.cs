@@ -151,7 +151,7 @@
                 var branch = "develop";
                 var rootPath = string.Empty;
 
-                var fixture = 4new DupFinderIssuesProviderFixture("DupFinder.xml");
+                var fixture = new DupFinderIssuesProviderFixture("DupFinder.xml");
                 fixture.ReadIssuesSettings.FileLinkSettings = FileLinkSettings.AzureDevOps(repositoryUrl, branch, rootPath);
 
                 // When
