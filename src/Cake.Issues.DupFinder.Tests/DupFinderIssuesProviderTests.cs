@@ -144,25 +144,6 @@
             }
 
             [Fact]
-            public void ShouldSetTheFileLinkWhenValidSettingsWereProvided()
-            {
-                // Given
-                var repositoryUrl = new Uri("http://myserver:8080/tfs/defaultcollection/myproject/_git/myrepository");
-                var branch = "develop";
-                var rootPath = string.Empty;
-
-                var fixture = new DupFinderIssuesProviderFixture("DupFinder.xml");
-                fixture.ReadIssuesSettings.FileLinkSettings = FileLinkSettings.AzureDevOps(repositoryUrl, branch, rootPath);
-
-                // When
-                IList<IIssue> issues = fixture.ReadIssues().ToList();
-                foreach (var issue in issues)
-                {
-                    issue.FileLink.ShouldNotBeNull();
-                }
-            }
-
-            [Fact]
             public void ShouldAddRealUrlsToMessagesIfFileLinkSettingsWereProvided()
             {
                 // Given
@@ -198,8 +179,6 @@
                         .InFile(@"Src\Foo.cs", 16, 232, null, null)
                         .OfRule("dupFinder")
                         .WithPriority(IssuePriority.Warning)
-                        .WithFileLink(new Uri(
-                            "http://myserver:8080/tfs/_git/myRepository?path=Src/Foo.cs&version=GBdevelop&line=16"))
                         .Create());
             }
         }

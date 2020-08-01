@@ -55,8 +55,8 @@
                 {
                     var identifier = GetIdentifier(cost, fragments, fragment);
                     var message = GetSimpleMessage(cost, fragments, fragment);
-                    var htmlMessage = GetHtmlMessage(cost, fragments, fragment);
-                    var mdMessage = GetMarkdownMessage(cost, fragments, fragment);
+                    var htmlMessage = this.GetHtmlMessage(cost, fragments, fragment);
+                    var mdMessage = this.GetMarkdownMessage(cost, fragments, fragment);
 
                     var issue =
                         IssueBuilder
@@ -70,8 +70,6 @@
 
                     result.Add(issue);
                 }
-
-                this.AddFileLinks(result);
             }
 
             return result;
@@ -82,25 +80,6 @@
             var otherFragments =
                 fragments.Where(f => !f.Equals(fragment)).OrderBy(f => f.FilePath).Select(p => p.FilePath);
             return $"{fragment.FilePath}-{cost}-{string.Join("-", otherFragments)}";
-        }
-
-        private void AddFileLinks(IEnumerable<IIssue> result)
-        {
-            if (string.IsNullOrWhiteSpace(this.Settings?.FileLinkSettings?.FileLinkPattern))
-            {
-                return;
-            }
-
-            foreach (var issue in result)
-            {
-                issue.FileLink = this.GetFileLink(issue);
-            }
-        }
-
-        private Uri GetFileLink(IIssue issue)
-        {
-            var resolvedPattern = this.Settings.FileLinkSettings.GetFileLink(issue);
-            return resolvedPattern;
         }
 
         private string GetHtmlMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
@@ -139,6 +118,23 @@
             }
 
             return builder.ToString();
+        }
+
+        private Uri ResolveFileLinkForFragment(DuplicateFragment fragment)
+        {
+            if (this.Settings?.FileLinkSettings == null)
+            {
+                return null;
+            }
+
+            var issue =
+                IssueBuilder
+                    .NewIssue(fragment.FilePath, fragment.FilePath, this)
+                    .InFile(fragment.FilePath, fragment.LineStart)
+                    .Create();
+
+            var resolvedPattern = this.Settings.FileLinkSettings.GetFileLink(issue);
+            return resolvedPattern;
         }
 
         private static string GetSimpleMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
@@ -210,22 +206,6 @@
             lineStart = int.Parse(lineStartValue, CultureInfo.InvariantCulture);
             lineEnd = int.Parse(lineEndValue, CultureInfo.InvariantCulture);
             return true;
-        }
-
-        private Uri ResolveFileLinkForFragment(DuplicateFragment fragment)
-        {
-            if (string.IsNullOrWhiteSpace(this.Settings?.FileLinkSettings?.FileLinkPattern))
-            {
-                return null;
-            }
-
-            var issue =
-                IssueBuilder
-                    .NewIssue(fragment.FilePath, fragment.FilePath, this)
-                    .InFile(fragment.FilePath, fragment.LineStart)
-                    .Create();
-
-            return this.GetFileLink(issue);
         }
 
         private IReadOnlyCollection<DuplicateFragment> GetDuplicateFragments(XContainer duplicate)
