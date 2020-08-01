@@ -1,5 +1,6 @@
 ﻿namespace Cake.Issues.DupFinder
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
@@ -41,12 +42,12 @@
                 }
 
                 // Gets all fragments from a duplicate
-                var fragments = this.GetDuplicateFragements(duplicate);
+                var fragments = this.GetDuplicateFragments(duplicate);
                 if (fragments.Count < 2)
                 {
                     this.Log.Warning(
                         "There are less than two fragments for the current duplicate. " +
-                        "A duplicate needs atleast two fragment to be an actual duplicate. Skipped.");
+                        "A duplicate needs at least two fragment to be an actual duplicate. Skipped.");
                     continue;
                 }
 
@@ -54,10 +55,10 @@
                 {
                     var identifier = GetIdentifier(cost, fragments, fragment);
                     var message = GetSimpleMessage(cost, fragments, fragment);
-                    var htmlMessage = GetHtmlMessage(cost, fragments, fragment);
-                    var mdMessage = GetMarkdownMessage(cost, fragments, fragment);
+                    var htmlMessage = this.GetHtmlMessage(cost, fragments, fragment);
+                    var mdMessage = this.GetMarkdownMessage(cost, fragments, fragment);
 
-                    result.Add(
+                    var issue =
                         IssueBuilder
                             .NewIssue(identifier, message, this)
                             .WithMessageInHtmlFormat(htmlMessage)
@@ -65,7 +66,9 @@
                             .InFile(fragment.FilePath, fragment.LineStart, fragment.LineEnd, null, null)
                             .OfRule("dupFinder")
                             .WithPriority(IssuePriority.Warning)
-                            .Create());
+                            .Create();
+
+                    result.Add(issue);
                 }
             }
 
@@ -79,7 +82,7 @@
             return $"{fragment.FilePath}-{cost}-{string.Join("-", otherFragments)}";
         }
 
-        private static string GetHtmlMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        private string GetHtmlMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
         {
             var builder = new StringBuilder();
             builder.Append($"Possible duplicate detected (cost {cost}).");
@@ -87,14 +90,18 @@
             foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
             {
                 builder.Append("<br/>");
+
+                var link = this.ResolveFileLinkForFragment(possibleDuplicateFragment);
                 builder.Append(
-                    $"<code>{possibleDuplicateFragment.FilePath}</code> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
+                    link == null
+                        ? $"<code>{possibleDuplicateFragment.FilePath}</code> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})"
+                        : $"<a href='{link}'>{possibleDuplicateFragment.FilePath}</a> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
             }
 
             return builder.ToString();
         }
 
-        private static string GetMarkdownMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        private string GetMarkdownMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
         {
             var builder = new StringBuilder();
             builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
@@ -102,11 +109,32 @@
             foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
             {
                 builder.Append("\r\n");
+
+                var link = this.ResolveFileLinkForFragment(possibleDuplicateFragment);
                 builder.Append(
-                    $"`{possibleDuplicateFragment.FilePath}` (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
+                    link == null
+                        ? $"`{possibleDuplicateFragment.FilePath}` (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})"
+                        : $"[{possibleDuplicateFragment.FilePath}]({link}) (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
             }
 
             return builder.ToString();
+        }
+
+        private Uri ResolveFileLinkForFragment(DuplicateFragment fragment)
+        {
+            if (this.Settings?.FileLinkSettings == null)
+            {
+                return null;
+            }
+
+            var issue =
+                IssueBuilder
+                    .NewIssue(fragment.FilePath, fragment.FilePath, this)
+                    .InFile(fragment.FilePath, fragment.LineStart)
+                    .Create();
+
+            var resolvedPattern = this.Settings.FileLinkSettings.GetFileLink(issue);
+            return resolvedPattern;
         }
 
         private static string GetSimpleMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
@@ -180,7 +208,7 @@
             return true;
         }
 
-        private IReadOnlyCollection<DuplicateFragment> GetDuplicateFragements(XContainer duplicate)
+        private IReadOnlyCollection<DuplicateFragment> GetDuplicateFragments(XContainer duplicate)
         {
             var items = new List<DuplicateFragment>();
             foreach (var issue in duplicate.Descendants("Fragment"))
@@ -207,7 +235,7 @@
         {
             internal DuplicateFragment(string filePath, int lineStart, int lineEnd)
             {
-                this.FilePath = filePath; 
+                this.FilePath = filePath;
                 this.LineStart = lineStart;
                 this.LineEnd = lineEnd;
             }
