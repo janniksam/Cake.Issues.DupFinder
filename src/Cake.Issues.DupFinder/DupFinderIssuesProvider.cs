@@ -130,7 +130,7 @@
             var issue =
                 IssueBuilder
                     .NewIssue(fragment.FilePath, fragment.FilePath, this)
-                    .InFile(fragment.FilePath, fragment.LineStart)
+                    .InFile(fragment.FilePath, fragment.LineStart, fragment.LineEnd, null, null)
                     .Create();
 
             var resolvedPattern = this.Settings.FileLinkSettings.GetFileLink(issue);
