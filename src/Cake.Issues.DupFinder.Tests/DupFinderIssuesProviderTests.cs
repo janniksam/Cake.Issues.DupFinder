@@ -62,14 +62,14 @@
             private const string ExpectedIssueMarkdownMessageWithResolvedUrl =
                 "Possible duplicate detected (cost 100).\r\n" +
                 "The following fragments were found that might be duplicates:\r\n" +
-                "[Src\\Bar.cs](http://myserver:8080/tfs/_git/myRepository?path=Src/Bar.cs&version=GBdevelop&line=17) (Line 17 to 233)\r\n" +
-                "[Src\\FooBar.cs](http://myserver:8080/tfs/_git/myRepository?path=Src/FooBar.cs&version=GBdevelop&line=18) (Line 18 to 234)";
+                "[Src\\Bar.cs](http://myserver:8080/tfs/_git/myRepository?path=/Src/Bar.cs&version=GBdevelop&line=17&lineEnd=233&lineStartColumn=1&lineEndColumn=2147483647) (Line 17 to 233)\r\n" +
+                "[Src\\FooBar.cs](http://myserver:8080/tfs/_git/myRepository?path=/Src/FooBar.cs&version=GBdevelop&line=18&lineEnd=234&lineStartColumn=1&lineEndColumn=2147483647) (Line 18 to 234)";
 
             private const string ExpectedIssueHtmlMessageWithResolvedUrl =
                 "Possible duplicate detected (cost 100).<br/>" +
                 "The following fragments were found that might be duplicates:<br/>" +
-                "<a href='http://myserver:8080/tfs/_git/myRepository?path=Src/Bar.cs&version=GBdevelop&line=17'>Src\\Bar.cs</a> (Line 17 to 233)<br/>" +
-                "<a href='http://myserver:8080/tfs/_git/myRepository?path=Src/FooBar.cs&version=GBdevelop&line=18'>Src\\FooBar.cs</a> (Line 18 to 234)";
+                "<a href='http://myserver:8080/tfs/_git/myRepository?path=/Src/Bar.cs&version=GBdevelop&line=17&lineEnd=233&lineStartColumn=1&lineEndColumn=2147483647'>Src\\Bar.cs</a> (Line 17 to 233)<br/>" +
+                "<a href='http://myserver:8080/tfs/_git/myRepository?path=/Src/FooBar.cs&version=GBdevelop&line=18&lineEnd=234&lineStartColumn=1&lineEndColumn=2147483647'>Src\\FooBar.cs</a> (Line 18 to 234)";
 
 
             [Fact]
@@ -143,17 +143,16 @@
                 }
             }
 
-            [Fact(Skip = "Waiting until next 0.9.0")]
+            [Fact]
             public void ShouldAddRealUrlsToMessagesIfFileLinkSettingsWereProvided()
             {
                 // Given
                 var repositoryUrl = new Uri("http://myserver:8080/tfs/_git/myRepository");
                 var branch = "develop";
-                var rootPath = string.Empty;
 
                 var fixture = new DupFinderIssuesProviderFixture("DupFinder.xml");
-                //fixture.ReadIssuesSettings.FileLinkSettings =
-                //    FileLinkSettings.ForAzureDevOps(repositoryUrl).Branch(branch).WithRootPath(rootPath);
+                fixture.ReadIssuesSettings.FileLinkSettings =
+                    FileLinkSettings.ForAzureDevOps(repositoryUrl).Branch(branch);
 
                 // When
                 var issues = fixture.ReadIssues().ToList();
