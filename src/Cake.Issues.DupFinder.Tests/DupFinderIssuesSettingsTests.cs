@@ -17,6 +17,7 @@
                 FilePath logFilePath = null;
 
                 // When
+                // ReSharper disable once ExpressionIsAlwaysNull
                 var result = Record.Exception(() => new DupFinderIssuesSettings(logFilePath));
 
                 // Then
@@ -30,6 +31,7 @@
                 byte[] logFileContent = null;
 
                 // When
+                // ReSharper disable once ExpressionIsAlwaysNull
                 var result = Record.Exception(() => new DupFinderIssuesSettings(logFileContent));
 
                 // Then

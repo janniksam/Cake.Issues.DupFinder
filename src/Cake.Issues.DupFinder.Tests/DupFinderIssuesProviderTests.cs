@@ -71,7 +71,6 @@
                 "<a href='http://myserver:8080/tfs/_git/myRepository?path=/Src/Bar.cs&version=GBdevelop&line=17&lineEnd=233&lineStartColumn=1&lineEndColumn=2147483647'>Src\\Bar.cs</a> (Line 17 to 233)<br/>" +
                 "<a href='http://myserver:8080/tfs/_git/myRepository?path=/Src/FooBar.cs&version=GBdevelop&line=18&lineEnd=234&lineStartColumn=1&lineEndColumn=2147483647'>Src\\FooBar.cs</a> (Line 18 to 234)";
 
-
             [Fact]
             public void Should_Read_Issue_Correct()
             {
@@ -83,8 +82,8 @@
 
                 // Then
                 issues.Count.ShouldBe(5);
-                issues.Count(i => 
-                    i.FilePath() == "Src/Foo.cs" && 
+                issues.Count(i =>
+                    i.FilePath() == "Src/Foo.cs" &&
                     i.Line == 16 && i.EndLine == 232).ShouldBe(1);
 
                 var issueToVerify = issues.Single(i =>
@@ -127,7 +126,6 @@
                 issues.Count.ShouldBe(2885);
                 sw.ElapsedMilliseconds.ShouldBeLessThan(2000);
             }
-
 
             [Fact]
             public void ShouldNotSetTheFileLinkWhenSettingsWereNotProvided()

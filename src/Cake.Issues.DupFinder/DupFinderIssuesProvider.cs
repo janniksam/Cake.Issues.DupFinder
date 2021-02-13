@@ -82,76 +82,6 @@
             return $"{fragment.FilePath}-{cost}-{string.Join("-", otherFragments)}";
         }
 
-        private string GetHtmlMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
-        {
-            var builder = new StringBuilder();
-            builder.Append($"Possible duplicate detected (cost {cost}).");
-            builder.Append("<br/>The following fragments were found that might be duplicates:");
-            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
-            {
-                builder.Append("<br/>");
-
-                var link = this.ResolveFileLinkForFragment(possibleDuplicateFragment);
-                builder.Append(
-                    link == null
-                        ? $"<code>{possibleDuplicateFragment.FilePath}</code> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})"
-                        : $"<a href='{link}'>{possibleDuplicateFragment.FilePath}</a> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
-            }
-
-            return builder.ToString();
-        }
-
-        private string GetMarkdownMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
-        {
-            var builder = new StringBuilder();
-            builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
-            builder.Append("The following fragments were found that might be duplicates:");
-            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
-            {
-                builder.Append("\r\n");
-
-                var link = this.ResolveFileLinkForFragment(possibleDuplicateFragment);
-                builder.Append(
-                    link == null
-                        ? $"`{possibleDuplicateFragment.FilePath}` (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})"
-                        : $"[{possibleDuplicateFragment.FilePath}]({link}) (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
-            }
-
-            return builder.ToString();
-        }
-
-        private Uri ResolveFileLinkForFragment(DuplicateFragment fragment)
-        {
-            if (this.Settings?.FileLinkSettings == null)
-            {
-                return null;
-            }
-
-            var issue =
-                IssueBuilder
-                    .NewIssue(fragment.FilePath, fragment.FilePath, this)
-                    .InFile(fragment.FilePath, fragment.LineStart, fragment.LineEnd, null, null)
-                    .Create();
-
-            var resolvedPattern = this.Settings.FileLinkSettings.GetFileLink(issue);
-            return resolvedPattern;
-        }
-
-        private static string GetSimpleMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
-        {
-            var builder = new StringBuilder();
-            builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
-            builder.Append("The following fragments were found that might be duplicates:");
-            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
-            {
-                builder.Append("\r\n");
-                builder.Append(
-                    $"\"{possibleDuplicateFragment.FilePath}\" (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
-            }
-
-            return builder.ToString();
-        }
-
         private static bool TryGetCost(XElement duplicate, out int cost)
         {
             cost = 0;
@@ -206,6 +136,76 @@
             lineStart = int.Parse(lineStartValue, CultureInfo.InvariantCulture);
             lineEnd = int.Parse(lineEndValue, CultureInfo.InvariantCulture);
             return true;
+        }
+
+        private static string GetSimpleMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
+            builder.Append("The following fragments were found that might be duplicates:");
+            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
+            {
+                builder.Append("\r\n");
+                builder.Append(
+                    $"\"{possibleDuplicateFragment.FilePath}\" (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
+            }
+
+            return builder.ToString();
+        }
+
+        private string GetHtmlMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Possible duplicate detected (cost {cost}).");
+            builder.Append("<br/>The following fragments were found that might be duplicates:");
+            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
+            {
+                builder.Append("<br/>");
+
+                var link = this.ResolveFileLinkForFragment(possibleDuplicateFragment);
+                builder.Append(
+                    link == null
+                        ? $"<code>{possibleDuplicateFragment.FilePath}</code> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})"
+                        : $"<a href='{link}'>{possibleDuplicateFragment.FilePath}</a> (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
+            }
+
+            return builder.ToString();
+        }
+
+        private string GetMarkdownMessage(int cost, IReadOnlyCollection<DuplicateFragment> fragments, DuplicateFragment fragment)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Possible duplicate detected (cost {cost}).\r\n");
+            builder.Append("The following fragments were found that might be duplicates:");
+            foreach (var possibleDuplicateFragment in fragments.Where(f => !f.Equals(fragment)))
+            {
+                builder.Append("\r\n");
+
+                var link = this.ResolveFileLinkForFragment(possibleDuplicateFragment);
+                builder.Append(
+                    link == null
+                        ? $"`{possibleDuplicateFragment.FilePath}` (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})"
+                        : $"[{possibleDuplicateFragment.FilePath}]({link}) (Line {possibleDuplicateFragment.LineStart} to {possibleDuplicateFragment.LineEnd})");
+            }
+
+            return builder.ToString();
+        }
+
+        private Uri ResolveFileLinkForFragment(DuplicateFragment fragment)
+        {
+            if (this.Settings?.FileLinkSettings == null)
+            {
+                return null;
+            }
+
+            var issue =
+                IssueBuilder
+                    .NewIssue(fragment.FilePath, fragment.FilePath, this)
+                    .InFile(fragment.FilePath, fragment.LineStart, fragment.LineEnd, null, null)
+                    .Create();
+
+            var resolvedPattern = this.Settings.FileLinkSettings.GetFileLink(issue);
+            return resolvedPattern;
         }
 
         private IReadOnlyCollection<DuplicateFragment> GetDuplicateFragments(XContainer duplicate)
